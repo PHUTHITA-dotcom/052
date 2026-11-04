@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COVID-19 Live Epidemiological Surveillance Dashboard with AI Insights</title>
+    <title>COVID-19 Epidemiological Surveillance Dashboard (Esri ArcGIS Maps)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -15,7 +15,7 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- PapaParse & SheetJS for Data Parsing -->
+    <!-- PapaParse & SheetJS -->
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
@@ -33,9 +33,7 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             font-size: 12px;
         }
-        .map-legend i {
-            width: 16px; height: 16px; float: left; margin-right: 8px; border-radius: 3px;
-        }
+        .map-legend i { width: 16px; height: 16px; float: left; margin-right: 8px; border-radius: 3px; }
     </style>
 </head>
 <body class="bg-slate-100 font-sans text-slate-800">
@@ -48,8 +46,8 @@
                     <i class="fa-solid fa-hospital-user text-2xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold">ระบบเฝ้าระวังทางระบาดวิทยา โรคโควิด-19 (Live Sync)</h1>
-                    <p class="text-xs text-teal-400">Esri ArcGIS World Services & AI-Powered Analytical Surveillance Dashboard</p>
+                    <h1 class="text-xl font-bold">ระบบเฝ้าระวังทางระบาดวิทยา โรคโควิด-19</h1>
+                    <p class="text-xs text-teal-400">Esri ArcGIS World Services GIS & Spatial Epidemiological Dashboard</p>
                 </div>
             </div>
             
@@ -63,16 +61,16 @@
                     </div>
                 </div>
 
-                <!-- ปุ่ม Sync Google Sheets -->
+                <!-- [เขียนเพิ่ม 1] ปุ่ม Sync Google Sheets ออนไลน์ -->
                 <button onclick="fetchGoogleSheetsData()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg text-xs font-semibold shadow transition flex items-center gap-1.5">
                     <i class="fa-solid fa-arrows-rotate" id="syncIcon"></i>
-                    <span>ซิงค์ข้อมูลสด (Google Sheets)</span>
+                    <span>ซิงค์ Google Sheets</span>
                 </button>
 
-                <!-- ปุ่มนำเข้าไฟล์ CSV/Excel -->
+                <!-- ปุ่มอัปโหลดไฟล์ในเครื่อง -->
                 <label class="cursor-pointer bg-teal-600 hover:bg-teal-500 text-white px-3 py-2 rounded-lg text-xs font-semibold shadow transition flex items-center gap-1.5">
                     <i class="fa-solid fa-file-csv"></i>
-                    <span>อัปโหลดไฟล์</span>
+                    <span>นำเข้าไฟล์ (.csv)</span>
                     <input type="file" id="fileInput" accept=".csv, .xlsx, .xls" class="hidden">
                 </label>
             </div>
@@ -81,7 +79,7 @@
 
     <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
 
-        <!-- AI Epidemiological Insight Panel -->
+        <!-- [เขียนเพิ่ม 2] กล่องวิเคราะห์ด้วย AI (AI Epidemiological Insight) -->
         <section class="bg-gradient-to-r from-slate-900 via-slate-800 to-teal-950 p-5 rounded-2xl text-white shadow-md border border-teal-500/30">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-3 border-b border-slate-700/80 pb-3">
                 <div class="flex items-center space-x-2.5">
@@ -99,8 +97,8 @@
                 </button>
             </div>
 
-            <div id="aiInsightContainer" class="text-sm text-slate-200 leading-relaxed min-h-[60px] flex items-center">
-                <p class="text-slate-400 italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>ระบบกำลังประมวลผลข้อมูลร่วมกับปัญญาประดิษฐ์...</p>
+            <div id="aiInsightContainer" class="text-sm text-slate-200 leading-relaxed min-h-[50px] flex items-center">
+                <p class="text-slate-400 italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>ระบบกำลังเตรียมประมวลผลข้อมูลร่วมกับปัญญาประดิษฐ์...</p>
             </div>
         </section>
 
@@ -108,13 +106,13 @@
         <section class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
                 <label class="block text-xs font-semibold text-slate-500 mb-1">จังหวัด (province)</label>
-                <select id="provinceFilter" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-teal-500">
+                <select id="provinceFilter" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-sm">
                     <option value="ALL">ทุกจังหวัด (ทั้งหมด)</option>
                 </select>
             </div>
             <div>
                 <label class="block text-xs font-semibold text-slate-500 mb-1">เพศ (Sex)</label>
-                <select id="sexFilter" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-teal-500">
+                <select id="sexFilter" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-sm">
                     <option value="ALL">ทุกเพศ</option>
                     <option value="ชาย">ชาย</option>
                     <option value="หญิง">หญิง</option>
@@ -122,7 +120,7 @@
             </div>
             <div>
                 <label class="block text-xs font-semibold text-slate-500 mb-1">ปัจจัยเสี่ยง (Risk Factor)</label>
-                <select id="riskFilter" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-teal-500">
+                <select id="riskFilter" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-sm">
                     <option value="ALL">ทุกปัจจัยเสี่ยง</option>
                 </select>
             </div>
@@ -136,68 +134,54 @@
         <!-- Stat KPI Cards -->
         <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="bg-white p-5 rounded-xl border-l-4 border-teal-500 shadow-sm">
-                <p class="text-xs font-semibold text-slate-500 uppercase">จำนวนผู้ติดเชื้อ/เคสทั้งหมด</p>
+                <p class="text-xs font-semibold text-slate-500 uppercase">จำนวนผู้ติดเชื้อสะสม</p>
                 <h2 id="kpiTotal" class="text-3xl font-extrabold text-slate-900 mt-1">0</h2>
-                <p class="text-xs text-slate-400 mt-2"><i class="fa-solid fa-users text-teal-500"></i> เคสในฐานข้อมูล</p>
             </div>
-
             <div class="bg-white p-5 rounded-xl border-l-4 border-blue-500 shadow-sm">
-                <p class="text-xs font-semibold text-slate-500 uppercase">จังหวัดที่มีรายงานการระบาด</p>
+                <p class="text-xs font-semibold text-slate-500 uppercase">จังหวัดที่มีรายงาน</p>
                 <h2 id="kpiProvinces" class="text-3xl font-extrabold text-slate-900 mt-1">0</h2>
-                <p class="text-xs text-slate-400 mt-2"><i class="fa-solid fa-map-location-dot text-blue-500"></i> พื้นที่ระบาดระดับจังหวัด</p>
             </div>
-
             <div class="bg-white p-5 rounded-xl border-l-4 border-indigo-500 shadow-sm">
                 <p class="text-xs font-semibold text-slate-500 uppercase">สัดส่วน ชาย : หญิง</p>
                 <h2 id="kpiSexRatio" class="text-2xl font-bold text-slate-900 mt-1.5">-</h2>
-                <p class="text-xs text-slate-400 mt-2"><i class="fa-solid fa-venus-mars text-indigo-500"></i> จำแนกตามเพศ</p>
             </div>
-
             <div class="bg-white p-5 rounded-xl border-l-4 border-purple-500 shadow-sm">
                 <p class="text-xs font-semibold text-slate-500 uppercase">อายุเฉลี่ยผู้ป่วย</p>
                 <h2 id="kpiAvgAge" class="text-3xl font-extrabold text-slate-900 mt-1">0 <span class="text-base font-normal">ปี</span></h2>
-                <p class="text-xs text-slate-400 mt-2"><i class="fa-solid fa-cake-candles text-purple-500"></i> คำนวณจากเคสระบุอายุ</p>
             </div>
         </section>
 
-        <!-- GIS Maps (Esri ArcGIS World Services) -->
+        <!-- GIS Map Section (Esri ArcGIS World Services) -->
         <section class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
+            <div class="flex justify-between items-center mb-4">
                 <div>
                     <h3 class="text-lg font-bold text-slate-900">แผนที่การกระจายทางภูมิศาสตร์ (Esri ArcGIS World Services)</h3>
-                    <p class="text-xs text-slate-500">แสดงความหนาแน่นระดับจังหวัด (Choropleth Map) ร่วมกับตำแหน่งรายบุคคล/อำเภอ (Spot Map)</p>
+                    <p class="text-xs text-slate-500">แสดงความหนาแน่นระดับจังหวัด (Choropleth Map) ร่วมกับตำแหน่งระดับอำเภอ (Spot Map)</p>
                 </div>
                 <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
-                    <i class="fa-solid fa-earth-americas mr-1"></i> Esri Tile Server Live
+                    <i class="fa-solid fa-earth-americas mr-1"></i> Esri Tile Server
                 </span>
             </div>
             
             <div id="map"></div>
         </section>
 
-        <!-- Epidemiological Charts Grid -->
+        <!-- Charts Grid -->
         <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 lg:col-span-2">
                 <h3 class="text-base font-bold text-slate-900 mb-1">Epidemic Curve (กราฟแสดงการระบาดตามช่วงเวลา)</h3>
-                <p class="text-xs text-slate-500 mb-4">จำนวนเคสตามวันที่รายงาน (announce_date)</p>
                 <div class="relative h-72"><canvas id="epiCurveChart"></canvas></div>
             </div>
-
             <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-                <h3 class="text-base font-bold text-slate-900 mb-1">10 อันดับจังหวัดที่มีรายงานเคสสูงสุด</h3>
-                <p class="text-xs text-slate-500 mb-4">จัดอันดับตามจังหวัดที่รับเข้ารักษา (province_of_isolation)</p>
+                <h3 class="text-base font-bold text-slate-900 mb-1">10 อันดับจังหวัดสูงสุด</h3>
                 <div class="relative h-72"><canvas id="topProvincesChart"></canvas></div>
             </div>
-
             <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-                <h3 class="text-base font-bold text-slate-900 mb-1">ปัจจัยเสี่ยงต่อการติดเชื้อ (Risk Breakdown)</h3>
-                <p class="text-xs text-slate-500 mb-4">จำแนกตามประวัติความเสี่ยงหลัก</p>
+                <h3 class="text-base font-bold text-slate-900 mb-1">ปัจจัยเสี่ยงต่อการติดเชื้อ</h3>
                 <div class="relative h-72"><canvas id="riskChart"></canvas></div>
             </div>
-
             <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 lg:col-span-2">
-                <h3 class="text-base font-bold text-slate-900 mb-1">โครงสร้างผู้ป่วยตามกลุ่มอายุและเพศ (Age & Gender Pyramid)</h3>
-                <p class="text-xs text-slate-500 mb-4">จำแนกกลุ่มอายุช่วงละ 10 ปี แบ่งตามเพศชาย-หญิง</p>
+                <h3 class="text-base font-bold text-slate-900 mb-1">โครงสร้างผู้ป่วยตามกลุ่มอายุและเพศ</h3>
                 <div class="relative h-72"><canvas id="ageGenderChart"></canvas></div>
             </div>
         </section>
@@ -205,7 +189,7 @@
     </main>
 
     <script>
-        // *** ใส่ URL ลิงก์ Google Sheets Published CSV ของคุณที่นี่ ***
+        // [เขียนเพิ่ม 3] ใส่ URL Google Sheets Published CSV ของคุณที่นี่
         const GOOGLE_SHEETS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS1Gk-YOUR_SHEET_ID_HERE/pub?output=csv';
 
         const THAI_PROVINCES = {
@@ -250,7 +234,7 @@
             fetchGoogleSheetsData();
         });
 
-        // 1. ดึงข้อมูลอัตโนมัติจาก Google Sheets
+        // [เขียนเพิ่ม 4] ฟังก์ชันดึงข้อมูลจาก Google Sheets
         function fetchGoogleSheetsData() {
             const syncIcon = document.getElementById('syncIcon');
             if (syncIcon) syncIcon.classList.add('fa-spin');
@@ -274,7 +258,6 @@
             });
         }
 
-        // ข้อมูลสำรองเพื่อการทำงานที่ราบรื่น
         function generateSampleData() {
             const provs = Object.keys(THAI_PROVINCES);
             const risks = ['สัมผัสใกล้ชิดผู้ป่วยยืนยัน', 'อยู่ระหว่างการสอบสวน', 'อาชีพเสี่ยง/สถานที่แออัด', 'บุคลากรทางการแพทย์', 'อื่นๆ'];
@@ -292,7 +275,7 @@
             processData(sample);
         }
 
-        // 2. AI Epidemiological Assistant ประมวลผลบทวิเคราะห์
+        // [เขียนเพิ่ม 5] ฟังก์ชัน AI วิเคราะห์ระบาดวิทยา
         function runAIAnalysis() {
             const aiContainer = document.getElementById('aiInsightContainer');
             aiContainer.innerHTML = `<p class="text-teal-300 italic"><i class="fa-solid fa-brain fa-spin mr-2"></i>ปัญญาประดิษฐ์กำลังประมวลผลวิเคราะห์ข้อมูลทางระบาดวิทยา...</p>`;
@@ -330,10 +313,10 @@
                     </div>
                 `;
                 aiContainer.innerHTML = aiInsightHTML;
-            }, 600);
+            }, 500);
         }
 
-        // แผนที่ Esri ArcGIS Tiles Direct
+        // โครงสร้างแผนที่ Esri ArcGIS จากโค้ดเดิมที่รันผ่านแน่นอน
         function initEsriMap() {
             map = L.map('map', { center: [13.7367, 100.5231], zoom: 6 });
 
@@ -397,7 +380,7 @@
             const opts = { responsive: true, maintainAspectRatio: false };
             epiChart = new Chart(document.getElementById('epiCurveChart'), {
                 type: 'line',
-                data: { labels: [], datasets: [{ label: 'จำนวนผู้ติดเชื้อใหม่ (Cases)', data: [], borderColor: '#0d9488', backgroundColor: 'rgba(13, 148, 136, 0.15)', fill: true }] },
+                data: { labels: [], datasets: [{ label: 'จำนวนผู้ป่วยใหม่ (Cases)', data: [], borderColor: '#0d9488', backgroundColor: 'rgba(13, 148, 136, 0.15)', fill: true }] },
                 options: opts
             });
             topChart = new Chart(document.getElementById('topProvincesChart'), {
@@ -543,7 +526,7 @@
                         fillOpacity: 0.8
                     });
 
-                    marker.bindPopup(`<b>${d.province}</b> - ${d.district}<br>เพศ: ${d.sex} | อายุ: ${d.age || '-'} ปี<br>ปัจจัยเสี่ยง: ${d.risk}`);
+                    marker.bindPopup(`<b>${d.province}</b> - ${d.district}<br>เพศ: ${d.sex} | อายุ: ${d.age || '-'} ปี`);
                     spotMapGroup.addLayer(marker);
                 }
             });
